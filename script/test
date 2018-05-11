@@ -1,0 +1,26 @@
+#!/bin/bash
+echo "Задать путь к проверяемому проекту? По умолчанию текущий каталог"
+read -p "[Д/Н]?" 
+if [[ ( "$REPLY"  == "y" ) || ( "$REPLY" == "Y" ) || ( "$REPLY"  == "Д") || ("$REPLY" == "д" ) ]]; then
+	echo "Укажите путь"
+	read -p  ":" 
+	if [[ "$REPLY" == "" ]]; then
+		echo "Путь не может быть пустым!"
+		exit 0
+	fi
+	if ! [ -d $REPLY ]; then
+		echo 'Путь не найден!'
+		exit 0
+	else
+		cd $REPLY
+	fi
+fi
+
+CurrentDirictory=`basename $PWD`
+if  [ -x $CurrentDirictory ]; then
+	echo "Исполняемый файл $CurrentDirictory создан"
+	exit 0
+else
+	echo "Исполняемый файл $CurrentDirictory  отсутсвует"
+	exit 0
+fi
