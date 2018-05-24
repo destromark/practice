@@ -1,0 +1,41 @@
+#!/bin/bash
+ExamplePath=/usr/share/gisdesigner/examples/*   #путь к примерам
+InstallCheck=$(dpkg -s gisdesigner | grep Status | cut -d " " -f4 )
+if [[ "$InstallCheck" == "installed" ]]; then
+	echo "Пакет gisdesigner установлен."
+else
+	echo "Пакет gisdesigner не найден."
+	exit 1
+fi
+
+function CreateBuild {				#функция сборки примера
+	echo "$PWD"
+	if qmake -project ; then 
+		if qmake "$1.pro" ; then
+			if make ; then
+			echo "$1: собран"
+			else "$1: на этапе сборки произошла ошибка"
+			fi
+		fi
+	fi
+}
+
+for file in $ExamplePath
+do
+	if [ -d "$file" ]; then
+	cd $file  
+	Project=$(find . -maxdepth 1  -name "*.pro" )
+	Build=$(basename "$Project" | cut -d "." -f1 )
+		if [  -f "$Project" ]; then
+			if [ ! -x "$Build"  ]; then
+			echo "$Build нет исполняемого файла. Выполянется собрка проекта."
+			sleep 1
+			CreateBuild $Build 
+			else
+			echo "$Build создан."
+			fi
+		fi
+	Project=""
+	Build=""
+	fi
+done
